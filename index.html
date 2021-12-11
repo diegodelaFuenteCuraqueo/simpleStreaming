@@ -9,8 +9,9 @@
 
   <body onload="configHLS()">
 
-    <div class="">
-      <label for="sourceLink"> Load (m3u) <input id="sourceLink" style="width:520px" type="text" min="0"></label>
+    <h2>Player</h2>
+    <div class="container">
+      <label for="sourceLink"> Load (m3u) <input id="sourceLink" style="width:400px" type="text" value="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"></label>
       <button id="btnSourceLink" class="btn btn-primary">Load</button>
     </div>
 
@@ -20,7 +21,7 @@
     </div>
 
     <div class="contenedor">
-      
+      <p id="pTime" class="playerController">00:00:00</p>
       <button id="btnPlay" class="btn btn-primary playerController">Play</button>
       <button id="btn5secBack" class="btn btn-secondary playerController"> - 5s. </button>
       <button id="btn5secFor" class="btn btn-secondary playerController"> + 5s. </button>
@@ -31,6 +32,8 @@
       <label for="rngSpeed" class="playerController">Speed
         <input id="rngSpeed" type="range" min="0" max="200" value="100">
       </label>
+
+      
 
     </div>
 
@@ -44,7 +47,7 @@
         </tr>
         <tr>
           <td> Current Level </td>
-          <td >  <input id="tdCurrentLevel" type="number" style="width:50px"></td>
+          <td >  <input id="tdCurrentLevel" type="number" style="width:50px" min="0" value="0"></td>
         </tr>
       </table>
 

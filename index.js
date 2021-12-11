@@ -8,11 +8,10 @@ const btn5secBack = document.getElementById('btn5secBack')
 const rngVolume   = document.getElementById('rngVolume')
 const rngSpeed    = document.getElementById('rngSpeed')
 const rngTransport= document.getElementById('rngTransport')
-
-const currentLevel = document.getElementById("tdCurrentLevel")
-
+const currentLevel= document.getElementById("tdCurrentLevel")
 let sourceLink = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
 
+//Event Listeners
 btnSource.addEventListener('click', () => {
   sourceLink = document.getElementById('sourceLink').value
   configHLS()
@@ -28,30 +27,29 @@ btnPlay.addEventListener('click', () => {
   }
 })
 
+//Transport controls
 btn5secBack.addEventListener('click', () => video.currentTime -= 5)
 btn5secFor.addEventListener('click', () => video.currentTime += 5)
 rngVolume.addEventListener('change', () => video.volume = rngVolume.value*0.01)
 rngSpeed.addEventListener('change', () => video.playbackRate = rngSpeed.value*0.01)
 rngTransport.addEventListener('click', () => video.currentTime = (rngTransport.value/1000) * video.duration)
-currentLevel.addEventListener('change', () => hls.currentLevel = currentLevel.value)
 
+currentLevel.addEventListener('change', () => {
+  hls.currentLevel = currentLevel.value
+  document.getElementById("tdLevels").innerHTML = hls.levels.length
+
+  levelData = hls.levels[hls.currentLevel]
+  setMediaPropertiesTable(levelData)
+  setHLSpropiertiesTable(levelData.details)
+})
+
+//playbar
 setInterval(() => {
   rngTransport.value = (video.currentTime/video.duration) * 1000
-  document.getElementById("tdLevels").innerHTML = hls.levels.length
-  currentLevel.value = hls.currentLevel
-  currentLevel.max = hls.levels.length - 1
-
-  level = hls.levels[hls.currentLevel]
-
-  document.getElementById("tdVideoCodec").innerHTML = level.videoCodec
-  document.getElementById("tdAudioCodec").innerHTML = level.audioCodec
-  document.getElementById("tdDimensions").innerHTML = ` ${level.width} : ${level.height}`
-  document.getElementById("tdDuration").innerHTML   = level.details.totalduration
-  document.getElementById("tdFragments").innerHTML = level.details.fragments.length
-  document.getElementById("tdLive").innerHTML       = level.details.live
-
+  document.getElementById("pTime").innerHTML = secondToMMss(video.currentTime * 1000)
 }, 1000)
 
+//Functions
 const configHLS = () => {
   if (Hls.isSupported()) {
 
@@ -59,18 +57,29 @@ const configHLS = () => {
     hls.on(Hls.Events.MEDIA_ATTACHED, () => {
 
       hls.loadSource(sourceLink)
-
       hls.on(Hls.Events.MANIFEST_PARSED,  (event, data) => {
-        
-        //console.log(event)
-        //console.log(data)
+        console.log(event)
+        console.log(data)
+        currentLevel.value = data.firstLevel
+        currentLevel.max = data.levels.length
+        document.getElementById("tdLevels").innerHTML =data.levels.length
+        setMediaPropertiesTable( data.levels[currentLevel.value])
       })
-      console.log( )
-
-      //console.log(hls)
-      //console.log(Object.keys(hls))
     })
   }
-
 }
 
+//sets data for tables
+const setMediaPropertiesTable = (levelData) => {
+  document.getElementById("tdVideoCodec").innerHTML = levelData.videoCodec
+  document.getElementById("tdAudioCodec").innerHTML = levelData.audioCodec
+  document.getElementById("tdDimensions").innerHTML = `${levelData.width} : ${levelData.height}`
+}
+
+const setHLSpropiertiesTable = (levelData) => {
+  document.getElementById("tdDuration").innerHTML   = levelData.totalduration
+  document.getElementById("tdFragments").innerHTML  = levelData.fragments.length
+  document.getElementById("tdLive").innerHTML       = levelData.live
+}
+
+const secondToMMss = seconds => new Date(seconds).toISOString().substr(11, 8)
