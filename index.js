@@ -28,8 +28,7 @@ btnPlay.addEventListener('click', () => {
   if(video.paused){
     btnPlay.innerText = "Pause"
     video.play()
-  }
-  if(!video.paused){
+  }else if(!video.paused){
     btnPlay.innerText = "Play"
     video.pause() 
   }
